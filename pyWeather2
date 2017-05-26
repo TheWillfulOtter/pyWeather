@@ -1,0 +1,51 @@
+
+# coding: utf-8
+
+# Using the basics of the mapIt.py project from the Automate the Boring Stuff Chapter 11 to create a command line tool to pull up the current weather for X city.
+
+# import the requests module
+# request the city 
+# request the state
+# parse the city and state into the request
+# 
+# parse the json response from Weather Underground
+# (Max 500 requests/day (10/minute)
+# Display
+#     *Date, City, Weather, Current Temp (F), Humidity, Wind Gust, 
+#     * Date = observation_time
+#     * City = city_entered (Var from input)
+#     * Weather = weather
+#     * Current Temp = temperature_string
+#     * Humidity = relative_humidity
+#     * Wind Gust = wind_gust_mph
+#  r = requests.get('http://api.wunderground.com/api/6578b1c864b1cd8b/conditions/q/CA/San_Francisco.json')  
+# 
+# d['current_observation']['temp_f']
+
+# In[1]:
+
+import requests,sys
+
+def weather_observation():
+	if len(sys.argv) > 2:
+		#get City and State from Command Line
+		city  = sys.argv[1]
+		state  = sys.argv[2]
+	else:
+		city = input("what city would you like the weather for? ")
+		state = input("What state would you like the weather for? (2 letter, ie NV for Nevada)")
+	
+	weather_data_points = ['observation_time', 'weather', 'temperature_string', 'relative_humidity', 'wind_gust_mph']
+	#might want to do imput validate for the state
+
+
+weather_request = requests.get('http://api.wunderground.com/api/6578b1c864b1cd8b/conditions/q/' + state + '/' + city + '.json')
+weather_results = weather_request.json()
+output_dict = {}
+for k,v in weather_results['current_observation'].items():
+    if k in weather_data_points:
+        output_dict[k]=v
+city = weather_results['current_observation']['display_location']['city']
+print("Here's your weather report for", city,':')
+for k,v in output_dict.items():
+    print(k,v)
